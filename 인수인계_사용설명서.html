@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>주간 뉴스 브리프 생성 프로그램 — 사용 설명서</title>
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 16mm;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", "나눔고딕", sans-serif;
+    color: #222;
+    line-height: 1.65;
+    font-size: 11pt;
+    margin: 0;
+  }
+  h1 {
+    font-size: 26pt;
+    font-weight: 700;
+    color: #1a2a4a;
+    border-bottom: 3px solid #1a2a4a;
+    padding-bottom: 10px;
+    margin: 0 0 6px 0;
+    letter-spacing: -0.5px;
+  }
+  .subtitle {
+    font-size: 11pt;
+    color: #666;
+    margin: 0 0 28px 0;
+  }
+  h2 {
+    font-size: 16pt;
+    color: #1a2a4a;
+    margin: 32px 0 12px 0;
+    padding: 8px 0 8px 14px;
+    border-left: 5px solid #d94e3e;
+    background: #f5f7fa;
+    page-break-after: avoid;
+  }
+  h3 {
+    font-size: 13pt;
+    color: #1a2a4a;
+    margin: 20px 0 8px 0;
+    page-break-after: avoid;
+  }
+  p { margin: 6px 0 10px 0; }
+  ul, ol { margin: 6px 0 12px 0; padding-left: 24px; }
+  li { margin-bottom: 4px; }
+  strong { color: #1a2a4a; }
+
+  .intro-box {
+    background: #f5f7fa;
+    border-left: 5px solid #1a2a4a;
+    padding: 14px 18px;
+    margin: 14px 0 22px 0;
+    border-radius: 3px;
+  }
+
+  .step {
+    background: #fafbfc;
+    border: 1px solid #e0e4e8;
+    border-radius: 6px;
+    padding: 14px 18px 10px 18px;
+    margin: 12px 0;
+    page-break-inside: avoid;
+  }
+  .step-num {
+    display: inline-block;
+    background: #1a2a4a;
+    color: #fff;
+    width: 26px;
+    height: 26px;
+    line-height: 26px;
+    text-align: center;
+    border-radius: 50%;
+    font-weight: 700;
+    margin-right: 10px;
+    font-size: 11pt;
+    vertical-align: middle;
+  }
+  .step-title {
+    font-size: 13pt;
+    font-weight: 700;
+    color: #1a2a4a;
+    vertical-align: middle;
+    display: inline-block;
+    margin: 0;
+  }
+  .step-body {
+    margin-top: 10px;
+    padding-left: 36px;
+  }
+
+  code, pre {
+    font-family: "Consolas", "D2Coding", "Courier New", monospace;
+    font-size: 10pt;
+  }
+  code {
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: #c0392b;
+  }
+  pre {
+    background: #2c3e50;
+    color: #f0f3f7;
+    padding: 12px 16px;
+    border-radius: 6px;
+    overflow-x: auto;
+    line-height: 1.5;
+    margin: 10px 0;
+    font-size: 9.5pt;
+  }
+  pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+  }
+
+  .warn {
+    background: #fff8e6;
+    border-left: 4px solid #e6a700;
+    padding: 10px 14px;
+    margin: 10px 0;
+    border-radius: 3px;
+    font-size: 10.5pt;
+  }
+  .tip {
+    background: #e8f4ea;
+    border-left: 4px solid #3d8b4a;
+    padding: 10px 14px;
+    margin: 10px 0;
+    border-radius: 3px;
+    font-size: 10.5pt;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 10.5pt;
+    page-break-inside: avoid;
+  }
+  th, td {
+    border: 1px solid #d0d6dc;
+    padding: 8px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: #1a2a4a;
+    color: #fff;
+    font-weight: 600;
+  }
+  tr:nth-child(even) td { background: #f8f9fb; }
+
+  .checklist {
+    background: #f0f5ff;
+    border: 2px dashed #1a2a4a;
+    border-radius: 6px;
+    padding: 16px 22px;
+    margin: 14px 0;
+  }
+  .checklist ol { margin: 8px 0 0 0; }
+  .checklist li { margin-bottom: 6px; }
+
+  .page-break { page-break-before: always; }
+
+  .footer-note {
+    margin-top: 40px;
+    padding-top: 12px;
+    border-top: 1px solid #ccc;
+    font-size: 9.5pt;
+    color: #888;
+    text-align: center;
+  }
+
+  .arrow { color: #d94e3e; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<h1>주간 뉴스 브리프 생성 프로그램</h1>
+<p class="subtitle">사용 설명서 (인수인계 자료) · KAIST 국가미래전략기술 정책연구소</p>
+
+<h2>이 프로그램이 하는 일</h2>
+<div class="intro-box">
+<p style="margin:0;">이번 주 뉴스 내용만 정해진 칸에 적어주면, <strong>PDF와 똑같은 모양의 이메일용 주간 뉴스 브리프</strong>를 자동으로 만들어 줍니다. 매주 이메일 편집기에서 레이아웃을 손으로 꾸밀 필요 없이, 내용만 바꿔 실행하면 완성된 화면이 브라우저에 뜹니다.</p>
+</div>
+
+<h2>준비물</h2>
+<p>딱 하나만 있으면 됩니다 — <strong>이번 주 내용이 적힌 파일</strong></p>
+<p>폴더 안에 있는 <code>sample_data.json</code> 파일이 예시이자 틀입니다. 이 파일을 메모장으로 열어 내용만 바꿔 쓰면 됩니다.</p>
+
+<h2>단계별 사용 방법</h2>
+
+<div class="step">
+  <span class="step-num">1</span><span class="step-title">파일 열기</span>
+  <div class="step-body">
+    <p><code>sample_data.json</code> 파일을 <strong>마우스 오른쪽 클릭 → 연결 프로그램 → 메모장</strong>으로 열어주세요.</p>
+  </div>
+</div>
+
+<div class="step">
+  <span class="step-num">2</span><span class="step-title">내용 바꿔 쓰기</span>
+  <div class="step-body">
+    <p>파일 안쪽 모습은 아래처럼 생겼습니다. <strong>따옴표("") 안에 적힌 글자만</strong> 바꿔주세요. 괄호나 쉼표, 기호는 건드리지 않습니다.</p>
+
+<pre><code>"period": "2026년 4월 1주차",              <span class="arrow">←</span> 주차
+"date_range": "2026.04.01 ~ 2026.04.05",  <span class="arrow">←</span> 날짜 범위
+
+"key_issues": [                           <span class="arrow">←</span> 이번 주 핵심 이슈 (3개)
+  "첫 번째 이슈 내용",
+  "두 번째 이슈 내용",
+  "세 번째 이슈 내용"
+],
+
+"articles": [                             <span class="arrow">←</span> 기사 목록
+  {
+    "category": "반도체 디스플레이",        <span class="arrow">←</span> 분야
+    "source": "전자신문",                  <span class="arrow">←</span> 신문사
+    "date": "2026.03.22",                 <span class="arrow">←</span> 기사 날짜
+    "title": "기사 제목을 여기에",
+    "summary": "기사 요약 내용을 여기에",
+    "url": "https://기사링크주소"
+  },
+  ...
+]</code></pre>
+
+    <div class="warn">
+      <strong>주의사항</strong>
+      <ul style="margin:6px 0 0 0;">
+        <li>한 기사가 끝나면 <code>},</code> 를 꼭 붙입니다 (마지막 기사만 <code>}</code> 로 끝남)</li>
+        <li>따옴표 안에서 엔터(줄바꿈)를 누르지 마세요</li>
+        <li>큰따옴표 <code>"</code> 를 빠뜨리지 않도록 주의</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <span class="step-num">3</span><span class="step-title">저장하기</span>
+  <div class="step-body">
+    <p><strong>Ctrl + S</strong> 를 눌러 저장한 뒤 메모장을 닫습니다.</p>
+  </div>
+</div>
+
+<div class="step">
+  <span class="step-num">4</span><span class="step-title">프로그램 실행하기</span>
+  <div class="step-body">
+    <p><code>html_format</code> 폴더를 열고, 폴더 안 빈 공간에서 <strong>Shift 키를 누른 채 마우스 오른쪽 클릭</strong> 하면 나오는 메뉴에서 다음 중 하나를 고릅니다:</p>
+    <ul>
+      <li>"여기에서 PowerShell 창 열기"</li>
+      <li>"여기에서 터미널 열기"</li>
+      <li>"여기에 명령 창 열기"</li>
+    </ul>
+    <p>검은 창이 뜨면 아래 한 줄을 복사해서 붙여넣고 <strong>엔터</strong>를 누릅니다.</p>
+<pre><code>python generate_brief.py sample_data.json --open</code></pre>
+    <p><span class="arrow">▶</span> 실행이 끝나면 <strong>자동으로 웹브라우저가 열리면서</strong> 완성된 결과물이 보여집니다.</p>
+  </div>
+</div>
+
+<div class="step">
+  <span class="step-num">5</span><span class="step-title">결과물 확인</span>
+  <div class="step-body">
+    <p>브라우저 창에 주간 브리프가 나타나면 완성입니다.</p>
+    <p>수정하고 싶으면 다시 2번 단계 (메모장에서 내용 바꾸기) 로 돌아가 고친 뒤 4번을 다시 실행하시면 됩니다.</p>
+  </div>
+</div>
+
+<h2>이메일로 보내는 법</h2>
+
+<h3>방법 A — 파일 그대로 첨부하기</h3>
+<ol>
+  <li><code>output</code> 폴더 안에 생긴 <code>brief_2026_04_w1.html</code> 파일을 이메일에 <strong>첨부</strong>합니다</li>
+  <li>받는 분이 첨부파일을 열면 브라우저에서 바로 볼 수 있습니다</li>
+</ol>
+
+<h3>방법 B — 이메일 본문에 넣기 (Gmail 추천)</h3>
+<ol>
+  <li>브라우저에 열린 결과물 화면 위에서 <strong>Ctrl + A</strong> (전체 선택)</li>
+  <li><strong>Ctrl + C</strong> (복사)</li>
+  <li>Gmail 새 편지 창에서 <strong>Ctrl + V</strong> (붙여넣기)</li>
+  <li>발송</li>
+</ol>
+
+<div class="tip">
+  <strong>Tip.</strong> 헤더 이미지와 KAIST 로고가 결과물 파일 안에 함께 포함돼 있어서, 받는 분에게도 그림이 깨지지 않고 그대로 보입니다.
+</div>
+
+<div class="page-break"></div>
+
+<h2>문제가 생겼을 때</h2>
+<table>
+  <thead>
+    <tr><th style="width:38%">상황</th><th>해결 방법</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>"python 을 찾을 수 없습니다" 오류</td>
+      <td>파이썬이 설치되어 있지 않은 상태입니다.<br><code>python.org</code> 에서 설치 후 "Add Python to PATH" 옵션을 반드시 체크하세요.</td>
+    </tr>
+    <tr>
+      <td>검은 창에 빨간 오류 메시지가 뜸</td>
+      <td><code>sample_data.json</code> 에서 따옴표·쉼표·괄호를 빠뜨렸을 가능성이 큽니다. 메모장에서 다시 열어 기호들을 확인하세요.</td>
+    </tr>
+    <tr>
+      <td>결과물에 이미지(헤더·로고)가 안 보임</td>
+      <td><code>images</code> 폴더 안에 <code>header background.jpg</code> 와 <code>FINSTP logo.png</code> 두 파일이 그대로 있는지 확인하세요. 파일 이름도 똑같아야 합니다.</td>
+    </tr>
+    <tr>
+      <td>브라우저가 자동으로 안 열림</td>
+      <td><code>output</code> 폴더에 들어가 <code>brief_2026_04_w1.html</code> 파일을 더블클릭하세요.</td>
+    </tr>
+    <tr>
+      <td>한글이 깨져 보임</td>
+      <td>메모장으로 <code>sample_data.json</code> 을 저장할 때 "다른 이름으로 저장" → 인코딩을 <strong>UTF-8</strong> 로 지정해서 저장하세요.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>매주 할 일 요약</h2>
+<div class="checklist">
+  <strong>이 5단계만 반복하시면 됩니다.</strong>
+  <ol>
+    <li><code>sample_data.json</code> 파일 열기</li>
+    <li>주차 · 날짜 · 이슈 · 기사 내용 바꾸기</li>
+    <li>저장 (Ctrl + S)</li>
+    <li>명령창에서 <code>python generate_brief.py sample_data.json --open</code> 실행</li>
+    <li>브라우저에 뜨는 결과물 확인 → 이메일로 발송</li>
+  </ol>
+</div>
+
+<h2>폴더 구성 안내</h2>
+<table>
+  <thead>
+    <tr><th style="width:38%">파일/폴더</th><th>역할</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>generate_brief.py</code></td><td>실행할 프로그램 본체 <strong>(수정 금지)</strong></td></tr>
+    <tr><td><code>sample_data.json</code></td><td>매주 내용을 적어 넣는 파일</td></tr>
+    <tr><td><code>images/header background.jpg</code></td><td>헤더(맨 위) 배경 이미지</td></tr>
+    <tr><td><code>images/FINSTP logo.png</code></td><td>하단 KAIST 로고</td></tr>
+    <tr><td><code>output/</code></td><td>완성된 결과물(HTML)이 자동으로 들어가는 폴더</td></tr>
+    <tr><td><code>주간브리프.pdf</code></td><td>디자인 기준 원본</td></tr>
+  </tbody>
+</table>
+
+<div class="tip">
+  <strong>중요.</strong> <code>generate_brief.py</code> 파일은 절대 열어서 내용을 수정하지 마세요. 디자인을 바꾸고 싶다면 개발자에게 문의하세요.
+</div>
+
+<div class="footer-note">
+  KAIST Future Institute for National Strategic Technology &amp; Policy · 주간 뉴스 브리프 생성 프로그램 사용 설명서
+</div>
+
+</body>
+</html>
