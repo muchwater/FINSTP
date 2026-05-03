@@ -127,49 +127,23 @@ body, table, td, p, span, a {{ font-family: Arial, sans-serif !important; }}
 </head>"""
 
 
-def build_header(period: str, date_range: str, bg_img_uri: str) -> str:
-    """네이비 배경 + 우측 기하학 그래픽으로 구성된 헤더.
-    bg_img_uri 가 있으면 배경이미지로 사용, 없으면 CSS 대체 패턴.
-    헤더 아래 흰색 영역에 '주차 주요 기사 모음' / '기간:' + 구분선.
+def build_header(period: str, date_range: str, header_img_uri: str) -> str:
+    """헤더 = 단일 이미지(타이틀 텍스트가 이미지에 미리 렌더링되어 있음).
+    이미지가 있으면 <img> 한 장으로 표시 → 모든 메일 클라이언트에서 동일하게 보임.
+    이미지가 없으면 기존 CSS 헤더(네이비 배경 + HTML 텍스트 + 줄무늬)로 폴백.
+    이미지 아래 흰색 영역에 '주차 주요 기사 모음' / '기간:' + 구분선 유지.
     """
-    is_url = bool(bg_img_uri) and bg_img_uri.startswith(("http://", "https://"))
-
-    if bg_img_uri:
-        bg_style = (
-            f"background-color:{C_HEADER_BG};"
-            f"background-image:url('{bg_img_uri}');"
-            f"background-repeat:no-repeat;"
-            f"background-position:right top;"
-            f"background-size:cover;"
-        )
-        bg_attr = f'background="{bg_img_uri}"'
+    if header_img_uri:
+        header_block = f"""<tr>
+<td bgcolor="{C_WHITE}" style="background:{C_WHITE};padding:24px 44px 0 44px;">
+<img src="{header_img_uri}" alt="KAIST 국가미래전략기술 정책연구소 — 주간 뉴스 브리프" width="632" style="display:block;width:100%;max-width:632px;height:auto;border:0;">
+</td>
+</tr>"""
     else:
-        bg_style = f"background-color:{C_HEADER_BG};"
-        bg_attr = ""
-
-    # Outlook용 VML 폴백 — VML <v:fill src>는 외부 URL만 지원 (data:URI 불가)
-    if is_url:
-        vml_open = f"""<!--[if gte mso 9]>
-<v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="mso-width-percent:1000;height:160px;">
-<v:fill type="frame" src="{bg_img_uri}" color="{C_HEADER_BG}" />
-<v:textbox inset="0,0,0,0">
-<![endif]-->"""
-        vml_close = """<!--[if gte mso 9]>
-</v:textbox>
-</v:rect>
-<![endif]-->"""
-    else:
-        vml_open = ""
-        vml_close = ""
-
-    # 타이틀 영역 (좌측 정렬)
-    title_block = f"""<p style="margin:0 0 14px 0;font-size:17px;color:{C_WHITE};font-family:{FONT};letter-spacing:2px;font-weight:500;">KAIST 국가미래전략기술 정책연구소</p>
+        # 폴백: CSS 헤더 (이미지가 없을 때만)
+        title_block = f"""<p style="margin:0 0 14px 0;font-size:17px;color:{C_WHITE};font-family:{FONT};letter-spacing:2px;font-weight:500;">KAIST 국가미래전략기술 정책연구소</p>
 <h1 style="margin:0;font-size:48px;font-weight:600;color:{C_WHITE};font-family:{FONT};letter-spacing:2px;line-height:1.15;">주간 뉴스 브리프</h1>"""
-
-    # 배경이미지가 없을 때 CSS 대체 우측 그래픽 (간단한 삼각형·스트라이프 조합)
-    fallback_graphic = ""
-    if not bg_img_uri:
-        fallback_graphic = f"""<td align="right" valign="top" width="220" style="padding-left:16px;">
+        stripes = f"""<td align="right" valign="top" width="220" style="padding-left:16px;">
 <table cellpadding="0" cellspacing="0" border="0" style="display:inline-table;">
 <tr>
 <td width="18" style="background:{C_ACCENT};height:140px;">&nbsp;</td>
@@ -182,30 +156,26 @@ def build_header(period: str, date_range: str, bg_img_uri: str) -> str:
 </tr>
 </table>
 </td>"""
-
-    header_inner = f"""<table width="100%" cellpadding="0" cellspacing="0" border="0">
+        header_block = f"""<tr>
+<td bgcolor="{C_WHITE}" style="background:{C_WHITE};padding:24px 44px 0 44px;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td bgcolor="{C_HEADER_BG}" style="background-color:{C_HEADER_BG};padding:28px 36px 30px 36px;" height="160">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
 <tr>
 <td valign="middle" style="padding:20px 0;">
 {title_block}
 </td>
-{fallback_graphic}
-</tr>
-</table>"""
-
-    return f"""<tr>
-<td bgcolor="{C_WHITE}" style="background:{C_WHITE};padding:24px 44px 0 44px;">
-<table width="100%" cellpadding="0" cellspacing="0" border="0">
-<tr>
-<td {bg_attr} bgcolor="{C_HEADER_BG}" style="{bg_style}padding:28px 220px 30px 36px;" height="160">
-{vml_open}
-{header_inner}
-{vml_close}
-</td>
+{stripes}
 </tr>
 </table>
 </td>
 </tr>
-<tr>
+</table>
+</td>
+</tr>"""
+
+    subtitle_block = f"""<tr>
 <td bgcolor="{C_WHITE}" style="background:{C_WHITE};padding:16px 44px 10px 44px;">
 <table width="100%" cellpadding="0" cellspacing="0" border="0">
 <tr>
@@ -222,6 +192,8 @@ def build_header(period: str, date_range: str, bg_img_uri: str) -> str:
 </table>
 </td>
 </tr>"""
+
+    return header_block + subtitle_block
 
 
 def build_key_issues(issues: list) -> str:
@@ -402,17 +374,18 @@ def main():
     with open(json_path, encoding="utf-8") as f:
         data = json.load(f)
 
-    # 이미지 우선순위: --flag > 외부 호스팅 URL (메일 클라이언트 호환을 위한 기본값) > 로컬 images/ 폴더
+    # 이미지 우선순위: --flag > 로컬 images/ 폴더 (base64 인라인 임베드) > 외부 호스팅 URL(fallback)
+    # base64 인라인이 메일 작성창(특히 Outlook)에서 inline 첨부로 자동 변환되어 가장 안정적
     images_root = Path.cwd() / "images"
     header_img = (
         args.header_img
+        or _default_image(images_root, "header_background_embed.png", "header_background_embed.jpg", "header_background.jpg", "header background.jpg", "header.jpg", "header.png")
         or DEFAULT_HEADER_URL
-        or _default_image(images_root, "header background.jpg", "header_background.jpg", "header.jpg", "header.png")
     )
     logo_img = (
         args.logo
+        or _default_image(images_root, "FINSTP_logo.jpg", "FINSTP_logo.png", "FINSTP logo.png", "FINSTP logo.jpg", "kaist_logo.png", "kaist.png")
         or DEFAULT_LOGO_URL
-        or _default_image(images_root, "FINSTP logo.png", "FINSTP_logo.png", "kaist_logo.png", "kaist.png")
     )
 
     html_str = generate_html(

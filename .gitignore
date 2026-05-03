@@ -20,3 +20,7 @@ desktop.ini
 # OneDrive sync
 *.tmp
 ~$*
+
+# 기사 스크랩 데이터 및 렌더링 결과물 — git 추적 제외
+*주차/
+output/
